@@ -216,6 +216,17 @@ struct tuple : make_base<Ts...> {
 	constexpr const auto& get() const noexcept {
 		return static_cast<const Indexed<nat<I>, call<nth_elem<nat<I+1>, id>, Ts...>>*>(this)->value;
 	}
+
+	template<size_t... idxs>
+	constexpr bool equality_helper(std::integer_sequence<size_t, idxs...>, const tuple& that) const noexcept {
+		return (... && (this->get<idxs>() == that.get<idxs>()));
+	}
+	constexpr bool operator==(const tuple& that) const noexcept {
+		return equality_helper(std::make_index_sequence<sizeof...(Ts)>(), that);
+	}
+	constexpr bool operator!=(const tuple& that) const noexcept {
+		return !(*this == that);
+	}
 };
 } // namespace impl
 

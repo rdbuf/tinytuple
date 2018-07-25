@@ -5,6 +5,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <cassert>
 
 static_assert(sizeof(tiny::tuple<bool, long, char, bool, int, bool>) == 16);
 static_assert(sizeof(std::tuple<bool, long, char, bool, int, bool>) == 32);
@@ -28,4 +29,9 @@ int main() {
 
 	static_assert(is_same_v<decltype(get<1>(std::move(y))), long&&>);
 	static_assert(is_same_v<decltype(get<1>(std::move(x))), const long&&>);
+
+	assert(x == x);
+
+	tiny::tuple<string> c;
+	assert(z != c);
 }
