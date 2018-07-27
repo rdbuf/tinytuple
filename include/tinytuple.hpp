@@ -28,7 +28,7 @@ struct parameter_pack_wrapper {};
 template<class holder, class cont>
 struct zip_with_index {
 	template<class... Ts, size_t... Indices>
-	static constexpr auto helper(parameter_pack_wrapper<Ts...>, std::integer_sequence<size_t, Indices...>)
+	static auto helper(parameter_pack_wrapper<Ts...>, std::integer_sequence<size_t, Indices...>)
 		-> typename cont::template result<typename holder::template result<nat<Indices>, Ts>...>;
 	template<class... Ts>
 	using result = decltype(helper(parameter_pack_wrapper<Ts...>(), std::index_sequence_for<Ts...>()));
@@ -120,17 +120,17 @@ struct sort {
 	struct merge_right_head;
 
 	template<class... Ts1, class... Ts2, class... Accum>
-	static constexpr auto merge(parameter_pack_wrapper<Ts1...>, parameter_pack_wrapper<Ts2...>, parameter_pack_wrapper<Accum...>)
+	static auto merge(parameter_pack_wrapper<Ts1...>, parameter_pack_wrapper<Ts2...>, parameter_pack_wrapper<Accum...>)
 		-> call<conditional_t<
 			comparator::template result<call<head<id>, Ts1...>, call<head<id>, Ts2...>>,
 			merge_left_head,
 			merge_right_head
 		>, parameter_pack_wrapper<Ts1...>, parameter_pack_wrapper<Ts2...>, parameter_pack_wrapper<Accum...>>;
 	template<class... Ts, class... Accum>
-	static constexpr auto merge(parameter_pack_wrapper<Ts...>, parameter_pack_wrapper<>, parameter_pack_wrapper<Accum...>)
+	static auto merge(parameter_pack_wrapper<Ts...>, parameter_pack_wrapper<>, parameter_pack_wrapper<Accum...>)
 		-> call<cont, Accum..., Ts...>;
 	template<class... Ts, class... Accum>
-	static constexpr auto merge(parameter_pack_wrapper<>, parameter_pack_wrapper<Ts...>, parameter_pack_wrapper<Accum...>)
+	static auto merge(parameter_pack_wrapper<>, parameter_pack_wrapper<Ts...>, parameter_pack_wrapper<Accum...>)
 		-> call<cont, Accum..., Ts...>;
 
 	struct recur {
@@ -148,7 +148,7 @@ struct sort {
 template<class comparator, class cont>
 struct sort<comparator, cont>::merge_left_head {
 	template<class... Ts1, class... Ts2, class... Accum>
-	static constexpr auto helper(parameter_pack_wrapper<Ts1...>, parameter_pack_wrapper<Ts2...>, parameter_pack_wrapper<Accum...>)
+	static auto helper(parameter_pack_wrapper<Ts1...>, parameter_pack_wrapper<Ts2...>, parameter_pack_wrapper<Accum...>)
 		-> decltype(sort::merge(
 			declval<call<tail<cfe<parameter_pack_wrapper>>, Ts1...>>(),
 			declval<parameter_pack_wrapper<Ts2...>>(),
@@ -161,7 +161,7 @@ struct sort<comparator, cont>::merge_left_head {
 template<class comparator, class cont>
 struct sort<comparator, cont>::merge_right_head {
 	template<class... Ts1, class... Ts2, class... Accum>
-	static constexpr auto helper(parameter_pack_wrapper<Ts1...>, parameter_pack_wrapper<Ts2...>, parameter_pack_wrapper<Accum...>)
+	static auto helper(parameter_pack_wrapper<Ts1...>, parameter_pack_wrapper<Ts2...>, parameter_pack_wrapper<Accum...>)
 		-> decltype(sort::merge(
 			declval<parameter_pack_wrapper<Ts1...>>(),
 			declval<call<tail<cfe<parameter_pack_wrapper>>, Ts2...>>(),
@@ -185,7 +185,7 @@ static_assert(is_same_v<call<head<id>, int, double, float>, int>);
 
 struct alignment_comparator {
 	template<class Idx1, class T1, class Idx2, class T2>
-	static constexpr auto helper(Indexed<Idx1, T1>, Indexed<Idx2, T2>) ->
+	static auto helper(Indexed<Idx1, T1>, Indexed<Idx2, T2>) ->
 		std::integral_constant<bool, (std::alignment_of_v<T1> > std::alignment_of_v<T2>)>;
 
 	template<class T1, class T2>
